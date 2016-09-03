@@ -1,6 +1,6 @@
 require_relative './retry_for'
 
-class SomeAppServer
+class PongQueueServer
   attr_reader :app_port
 
   def initialize(port)
@@ -12,21 +12,15 @@ class SomeAppServer
     return if app_is_running?
 
     unless artifact_exists?
-      puts ''
-      puts '<'*80
-      puts ''
-      puts 'No Artifact Found, create with `./gradlew clean assemble` in project root directory.'
-      puts ''
-      puts '>'*80
-      puts ''
+      raise 'No Artifact Found, create with `./gradlew clean assemble` in project root directory.'
     end
 
     @some_app_pid = Process.spawn(
-        "SERVER_PORT=#{app_port} java -jar applications/some-app/build/libs/some-app.jar",
+        "SERVER_PORT=#{app_port} java -jar build/libs/pong-queue.jar",
         chdir: '../',
         pgroup: true,
-        out: 'some-app.std.log',
-        err: 'some-app.err.log'
+        out: 'pong-queue.std.log',
+        err: 'pong-queue.err.log'
     )
 
     puts "Attempting to start the application at http://localhost:#{app_port}"
@@ -59,7 +53,7 @@ class SomeAppServer
   end
 
   def artifact_exists?
-    artifact_found = `[ -e ../applications/some-app/build/libs/some-app.jar ] && echo true || echo false`
+    artifact_found = `[ -e ../build/libs/pong-queue.jar ] && echo true || echo false`
     return true if artifact_found == "true\n"
     false
   end

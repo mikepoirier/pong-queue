@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'yaml'
+require 'json'
 require 'erb'
 require 'rspec/retry'
 require 'require_all'
@@ -11,9 +12,8 @@ require 'active_support'
 require 'active_support/core_ext'
 
 require_rel 'helpers'
-# require_rel '../../utils'
 
-some_app_spec_helper = SomeAppServer.new('8080')
+some_app_spec_helper = PongQueueServer.new('8080')
 
 RSpec.configure do |config|
   config.filter_run :focus
@@ -36,6 +36,22 @@ end
 
 def get(url)
   response = HTTParty.get(url)
+
+  JSON.parse(
+      response.body,
+      symbolize_names: true)
+end
+
+def delete(url)
+  HTTParty.delete(url)
+end
+
+def post(url, body)
+  response = HTTParty.post(
+    url,
+    body: body.to_json,
+    headers: {'Content-Type' => 'application/json'}
+  )
 
   JSON.parse(
       response.body,

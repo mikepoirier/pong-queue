@@ -1,7 +1,7 @@
-def some_app_port
+def pong_queue_port
   8080
 end
 
-def some_app_url(path = '')
-  "http://localhost:#{some_app_port}#{path}"
+def pong_queue_url(path = '')
+  "http://localhost:#{pong_queue_port}#{path}"
 end
